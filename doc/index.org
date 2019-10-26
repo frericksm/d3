@@ -1,0 +1,21 @@
+ #+TITLE: Using Clojurescript and D3 to create a motion chart
+ 
+* Introduction                                                    
+  The  motion charts from the  famous TED-Talk of Hans Gosling [1]  are impressive.
+  Brett W. Green implemented a motion  chart  [2]  using D3.js[3]. 
+  There  is a good  introduction on how  to  use D3.js [4] from Clojurescript [5].
+  I will  try to combine things and build a clojurescript library  for displaying a motion chart.  
+
+* Footnotes
+
+[1] https://www.ted.com/talks/hans_rosling_shows_the_best_stats_you_ve_ever_seen
+
+[2] https://bost.ocks.org/mike/nations
+
+[3] https://d3js.org
+
+[4] https://lambdaisland.com/blog/2018-04-26-d3-clojurescript
+
+[5] https://clojurescript.org
+
+  
