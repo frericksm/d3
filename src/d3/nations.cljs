@@ -4,47 +4,33 @@
 [d3.nations-utils :as utils]))
 (enable-console-print!)
 
-;;Chart dimensions.
-(def  margin  {:top 19.5 :right 19.5 :bottom 19.5 :left 39.5})
-(def width (- 960 (:right margin)))
-(def height (- 500 (:top margin) (:bottom margin)))
 
-;; Various scales. These domains make assumptions of data, naturally.
-
-(def xScale (-> js/d3
-(.scaleLog #js [300, 1e5] #js[0, width])))
-(def yScale (-> js/d3
-(.scaleLinear #js [10 85] #js[height 0 ])))
-(def radiusScale (-> js/d3
-(.scaleSqrt #js [0 5e8] #js[0 40 ])) )
-(def colorScale (-> js/d3
-                    (.scaleOrdinal #js [0 10] (aget js/d3 "schemeCategory10" ))))
 
 ;; The x & y axes.
 (def xAxis  (-> js/d3
-( .axisBottom xScale)
+( .axisBottom utils/xScale)
 ;;( .scale xScale)
 (.tickFormat "d")
 #_(.ticks 12 (.format js/d3 ",d"))))
 
 (def yAxis  (-> js/d3
-( .axisLeft yScale)))
+( .axisLeft utils/yScale)))
 
 ;; Create the SVG container and set the origin.
 
 (def svg (-> js/d3
 (.select "#chart")
 (.append "svg")
-(.attr "width" (+ width (:left margin) (:right margin)))
-(.attr "height" (+ height (:top margin) (:bottom margin)))
+(.attr "width" (+ utils/width (:left utils/margin) (:right utils/margin)))
+(.attr "height" (+ utils/height (:top utils/margin) (:bottom utils/margin)))
 (.append "g")
-(.attr "transform" (str "translate(" (:left margin) "," (:top margin) ")"))))
+(.attr "transform" (str "translate(" (:left utils/margin) "," (:top utils/margin) ")"))))
 
 ;; Add the x-axis.
 (-> svg
 (.append "g")
 (.attr "class" "x axis" )
-(.attr "transform" (str "translate (0" "," height  ")"))
+(.attr "transform" (str "translate (0" "," utils/height  ")"))
 (.call xAxis))
 
 ;; Add the y-axis.
@@ -58,8 +44,8 @@
 (.append "text")
 (.attr "class" "x label")
 ( .attr "text-anchor" "end")
-( .attr "x" width)
-( .attr"y" (- height 6))
+( .attr "x" utils/width)
+( .attr"y" (- utils/height 6))
 ( .text"income per capita, inflation-adjusted (dollars)")
 )
 
@@ -79,8 +65,8 @@
 (.append "text")
 (.attr "class" "year label")
 (.attr "text-anchor" "end")
-(.attr "x" width)
-(.attr "y" (- height 24))
+(.attr "x" utils/width)
+(.attr "y" (- utils/height 24))
 (.text 1800)))
 
 (def box (-> label (.node) (.getBBox)))
@@ -94,8 +80,8 @@
   (.attr "y" (aget box "y"))
   (.attr "width" (aget box "width"))
   (.attr "height" (aget box "height"))
-  (.on "mouseover" utils/enableInteraction)))
-
+  ;;(.on "mouseover" utils/enableInteraction)
+))
 
 
 
@@ -103,35 +89,43 @@
 (defn load-data [nations]
   ;; Add a dot per nation. Initialize the data at 1800, and set the colors.
 
-  (let [dot (-> svg 
+  (let [elin (aget  js/d3 "easeLinear")
+        dot 
+        (-> svg
 (.append "g")
+
 (.attr "class" "dots")
 (.selectAll ".dot")
 (.data (utils/interpolateData nations 1800))
 (.enter)
 (.append "circle")
 (.attr "class" "dot")
-(.style "fill" ( fn [d] (.ordinal colorScale d )))
+(.style "fill" ( fn [d] (utils/colorScale (utils/color d))))
 (.call utils/position)
 (.sort utils/order))]
+
+
 ;; Add a title.
   (-> dot
 (.append "title" )
-(.text (fn [d] (aget d "name"))))
-)
-)
+(.text utils/data-key))
+
+;; Start a transition that interpolates the data based on year.
+(-> svg
+(.transition)
+(.duration 3000)
+(.ease (aget  js/d3 "easeLinear"))
+(.tween "year" (utils/tweenYear nations label box dot))
+;;(.on "end" utils/enableInteraction)
+))
 
 
 
 
 
-(defn year [year] 
-  (.interpolateNumber js/d3 1800 2009))
 
-  ;; Tweens the entire chart by first tweening the year, and then the data.
-  ;; For the interpolated data, the dots and label are redrawn.
-(defn  tweenYear [nations label box dot ]
-  (fn [t] (utils/displayYear nations label box dot (year t))))
+
+
   ;; Updates the display to show the specified year.
 
 
@@ -140,18 +134,12 @@
 
 
 
-;; Start a transition that interpolates the data based on year.
-
-#_(-> svg
-(.transition)
-(.duration 30000)
-(.ease (aget js/d3 "easeLinear"))
-(.tween "year" tweenYear)
-(.each "end" enableInteraction))
 
 
-;; Entry
-;; Load the data.
+  ;; Entry
+  ;; Load the data.
+
+  )
 
 (-> js/d3
 (.json "nations.json" load-data ))
