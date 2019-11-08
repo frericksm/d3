@@ -8,11 +8,13 @@
 #_(defn color [d] (aget d "region"))
 #_(defn data-key [d] (aget d "name"))
 
-(defn x [d] (get d :income))
-(defn y [d](get d :lifeExpectancy))
-(defn radius [d] (get d :population))
-(defn color [d] (get d :region))
-(defn data-key [d] (get d :name))
+(defn to-clj [d]
+  (js->clj d :keywordize-keys true))
+(defn x [d] (get  (to-clj d) :income))
+(defn y [d](get (to-clj d) :lifeExpectancy))
+(defn radius [d] (get (to-clj d) :population))
+(defn color [d] (get (to-clj d) :region))
+(defn data-key [d] (get (to-clj d) :name))
 
 ;;Chart dimensions.
 (def  margin  {:top 19.5 :right 19.5 :bottom 19.5 :left 39.5})
@@ -22,7 +24,7 @@
 ;; Various scales. These domains make assumptions of data, naturally.
 
 (def xScale (-> js/d3
-(.scaleLog #js [300, 1e5] #js[0, width])))
+(.scaleLog #js [300, 100000] #js[0, width])))
 (def yScale (-> js/d3
 (.scaleLinear #js [10 85] #js[height 0 ])))
 (def radiusScale (-> js/d3
@@ -46,7 +48,9 @@ obj)
   ;; Positions the dots based on data.
 (defn position [dot]
 (-> dot
-(.attr "cx" (fn [d] (xScale (x d))))
+(.attr "cx" (fn [d] (let [income (x d)
+                          result (xScale income )]
+result)))
 (.attr "cy" (fn [d]  (yScale (y d))))
 (.attr "r" (fn [d]  (radiusScale (radius d))))))
 
