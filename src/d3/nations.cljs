@@ -90,13 +90,14 @@
   ;; Add a dot per nation. Initialize the data at 1800, and set the colors.
 
   (let [elin (aget  js/d3 "easeLinear")
+        data  (utils/interpolateData nations 1800)
         dot 
         (-> svg
 (.append "g")
 
 (.attr "class" "dots")
 (.selectAll ".dot")
-(.data (utils/interpolateData nations 1800))
+(.data data)
 (.enter)
 (.append "circle")
 (.attr "class" "dot")
@@ -114,31 +115,13 @@
 (-> svg
 (.transition)
 (.duration 3000)
-(.ease (aget  js/d3 "easeLinear"))
-(.tween "year" (utils/tweenYear nations label box dot))
-;;(.on "end" utils/enableInteraction)
+#_(.ease (aget  js/d3 "easeLinear"))
+#_(.tween "year" (utils/tweenYear nations label box dot))
+#_(.on "end" utils/enableInteraction)
 ))
-
-
-
-
-
-
-
-
   ;; Updates the display to show the specified year.
-
-
-
-
-
-
-
-
-
   ;; Entry
   ;; Load the data.
-
   )
 
 (-> js/d3

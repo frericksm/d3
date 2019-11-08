@@ -2,17 +2,17 @@
 (:require [cljsjs.d3]))
 (enable-console-print!)
 ;; Various accessors that specify the four dimensions of data to visualize.
-(defn x [d] (aget d "income"))
-(defn y [d](aget d "lifeExpectancy"))
-(defn radius [d] (aget d "population"))
-(defn color [d] (aget d "region"))
-(defn data-key [d] (aget d "name"))
+#_(defn x [d] (aget d "income"))
+#_(defn y [d](aget d "lifeExpectancy"))
+#_(defn radius [d] (aget d "population"))
+#_(defn color [d] (aget d "region"))
+#_(defn data-key [d] (aget d "name"))
 
-(comment (defn x [d] (get d :income))
+(defn x [d] (get d :income))
 (defn y [d](get d :lifeExpectancy))
 (defn radius [d] (get d :population))
-(defn color [d] (aget d :region))
-(defn data-key [d] (get d :name)))
+(defn color [d] (get d :region))
+(defn data-key [d] (get d :name))
 
 ;;Chart dimensions.
 (def  margin  {:top 19.5 :right 19.5 :bottom 19.5 :left 39.5})
@@ -54,17 +54,16 @@ obj)
 (defn  interpolateValues [values year]
   (let [i ((aget bisect "left")  values year 0 (dec (count values)))
         a (nth values i)
-result (if (> i 0 
-(let [b ( nth values (dec i))
-t (/ (- year (nth a 0)) (- (nth b 0) (nth a 0 )))]
-(+ (* (nth a 1) (-1 t)) (* (nth b 1) t))))
-(nth a 1)) ]
+        b (if (> i  0 )( nth values (dec i)))
+        t (if (not (nil? b)) (/ (- year (nth a 0)) (- (nth b 0) (nth a 0 ))))
+        result (if (not (nil? t))(+ (* (nth a 1) (-1 t)) (* (nth b 1) t))
+(nth a 1))]
 result))
 
 
 ;;
 
-(defn interpolate-datum [year {:keys [income population lifeExpectancy] :as d}]
+(defn interpolate-datum [year {:keys [ income population lifeExpectancy] :as d}]
   (let [new-income (interpolateValues income year)
         new-population (interpolateValues population year)
         new-lifeExpectancy (interpolateValues lifeExpectancy year)]
@@ -74,12 +73,15 @@ result))
 (assoc x  :income new-income)
   (assoc x  :population  new-population )
   (assoc x  :lifeExpectancy new-lifeExpectancy )
-(clj->js x))))
+(clj->js x)
+(debug "interpolate-datum" x))))
 
   ;; Interpolates the dataset for the given (fractional) year.
 (defn  interpolateData [nations year]
-
-  (map (partial interpolate-datum year) nations))
+(as-> nations x
+(js->clj x :keywordize-keys true)
+  (map (partial interpolate-datum year) x)
+(clj->js x)))
 
 (defn displayYear [nations label box  dot year]
 
