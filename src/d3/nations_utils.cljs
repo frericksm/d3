@@ -2,9 +2,6 @@
   (:require [cljsjs.d3]))
 (enable-console-print!)
 ;; Various accessors that specify the four dimensions of data to visualize.
-(defn to-clj [d]
-  (js->clj d :keywordize-keys true))
-(defn x [d] (get  (to-clj d) :income))
 (defn to-clj [o]
   
   (if (object? o)
@@ -25,13 +22,14 @@
 ;; Various scales. These domains make assumptions of data, naturally.
 
 (def xScale (-> js/d3
-                (.scaleLog #js [300, 1e5] #js[0, width])))
+                (.scaleLog #js [300, 100000] #js [0 width])))
 (def yScale (-> js/d3
-                (.scaleLinear #js [10 85] #js[height 0 ])))
+                (.scaleLinear #js [10 85] #js [height 0]))) ;; or [height 0]??
 (def radiusScale (-> js/d3
-                     (.scaleSqrt #js [0 5e8] #js[0 40 ])) )
+                     (.scaleSqrt #js [0 5e8] #js [0 40])))
 (def colorScale (-> js/d3
-                    (.scaleOrdinal #js [0 10] (aget js/d3 "schemeCategory10" ))))
+                (.scaleOrdinal)
+                (.range (aget js/d3 "schemeCategory10" ))))
 
 
 ;; A bisector since many nation's data is sparsely-defined.
