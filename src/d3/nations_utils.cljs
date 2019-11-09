@@ -29,7 +29,7 @@
                      (.scaleSqrt)
                      (.domain #js [0 5e8])
                      (.range #js [0 40])
-                     #_(.scaleSqrt #js [0 5e8] #js [0 40])))
+))
 (def colorScale (-> js/d3
                 (.scaleOrdinal)
                 (.range (aget js/d3 "schemeCategory10" ))))
@@ -79,7 +79,7 @@
       (assoc x  :population  new-population )
       (assoc x  :lifeExpectancy new-lifeExpectancy )
       (clj->js x)
-      (debug "interpolate-datum" x))))
+      #_(debug "interpolate-datum" x))))
 
 ;; Interpolates the dataset for the given (fractional) year.
 (defn  interpolateData [nations year]

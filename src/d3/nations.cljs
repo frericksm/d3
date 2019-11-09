@@ -80,7 +80,7 @@
                  (.attr "y" (aget box "y"))
                  (.attr "width" (aget box "width"))
                  (.attr "height" (aget box "height"))
-                 ;;(.on "mouseover" utils/enableInteraction)
+                 (.on "mouseover" utils/enableInteraction)
                  ))
 
 
@@ -117,9 +117,9 @@
     (-> svg
         (.transition)
         (.duration 3000)
-        #_(.ease (aget  js/d3 "easeLinear"))
-        #_(.tween "year" (utils/tweenYear nations label box dot))
-        #_(.on "end" utils/enableInteraction)
+        (.ease (aget  js/d3 "easeLinear"))
+        (.tween "year" (partial utils/tweenYear nations label box dot))
+        (.on "end" utils/enableInteraction)
         )))
   ;; Updates the display to show the specified year.
   ;; Entry
