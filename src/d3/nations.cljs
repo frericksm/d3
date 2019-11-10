@@ -78,9 +78,9 @@
                  (.attr "class" "overlay")
                  (.attr "x" (aget box "x"))
                  (.attr "y" (aget box "y"))
-                 (.attr "width" (aget box "width"))
-                 (.attr "height" (aget box "height"))
-                 (.on "mouseover" utils/enableInteraction)
+                 (.attr "width" (.-width box ))
+                 (.attr "height" (.-height box ))
+                 #_(.on "mouseover" utils/enableInteraction) ;; TODO
                  ))
 
 
@@ -89,7 +89,7 @@
 (defn load-data [nations]
   ;; Add a dot per nation. Initialize the data at 1800, and set the colors.
 
-  (let [elin (aget  js/d3 "easeLinear")
+  (let [elin (.-easeLinear  js/d3)
         data  (utils/interpolateData nations 1800)
         dot 
         (-> svg
@@ -116,10 +116,10 @@
     ;; Start a transition that interpolates the data based on year.
     (-> svg
         (.transition)
-        (.duration 3000)
-        (.ease (aget  js/d3 "easeLinear"))
-        (.tween "year" (partial utils/tweenYear nations label box dot))
-        (.on "end" utils/enableInteraction)
+        (.duration 30000)
+        (.ease elin)
+        (.tween "year" (partial utils/tweenYear nations label box dot ))
+        (.on "end" (partial utils/enableInteraction svg nations label box dot utils/width overlay))
         )))
   ;; Updates the display to show the specified year.
   ;; Entry

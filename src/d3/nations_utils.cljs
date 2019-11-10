@@ -98,9 +98,12 @@
 
 (defn  enableInteraction 
   [svg nations  label box dot width overlay] 
-  (let [yearScale (-> js/d3
-                      (.scaleLinear #js [1800 2009] #js[(+ (x box) 10 ) (+ (x box) (width box) -10)])
-                      (.clamp true))
+  (let [yearScale  (-> js/d3
+(.scaleLinear)
+(.domain #js[1800 2009])
+(.range #js[(+ (.-x box) 10 ) (+ (.-x box) (.-width box) -10)])
+
+(.clamp true))
         onmouseover (fn [] (.classed label "active" true))
         onmouseout (fn [] (.classed label "active" false))
         onmousemove (fn [] 
