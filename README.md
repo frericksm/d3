@@ -17,4 +17,5 @@ a browser is opened at [http://localhost:9050](http://localhost:9050)
 
 and you will  see something like this
 
+
 ![alt text](https://github.com/frericksm/d3/raw/master/doc/images/overview.png "Ovweview")
