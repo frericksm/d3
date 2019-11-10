@@ -17,4 +17,4 @@ a browser is opened at [http://localhost:9050](http://localhost:9050)
 
 and you will  see something like this
 
-[I'm a relative reference to a repository file](../blob/master/doc/images/overview.png)
+![alt text](https://github.com/frericksm/d3/raw/master/doc/imagesoverview.png "Ovweview")
