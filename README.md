@@ -1,13 +1,13 @@
 
 
- prerequisites
+ Prerequisites
 --------------
-* install clojure cli [I'm an inline-style link](https://clojure.org/guides/getting_started) 
+* install clojure cli tools [clojure cli tools](https://clojure.org/guides/getting_started) 
 
-### how to  run 
+### How to  run 
 
 
-### start in a terminal
+### open a terminal and execute
 
 
 ```bash
@@ -15,6 +15,6 @@
 ```
 a browser is opened at [http://localhost:9050](http://localhost:9050)
 
-and you see something like this
+and you will  see something like this
 
 [I'm a relative reference to a repository file](../blob/master/doc/images/overview.png)
