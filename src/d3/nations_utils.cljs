@@ -34,6 +34,13 @@
                 (.scaleOrdinal)
                 (.range (aget js/d3 "schemeCategory10" ))))
 
+(defn yearScale [box] 
+(-> js/d3
+(.scaleLinear)
+(.domain #js[1800 2009])
+(.range #js[(+ (.-x box) 10 ) (+ (.-x box) (.-width box) -10)])
+
+(.clamp true)))
 
 ;; A bisector since many nation's data is sparsely-defined.
 (def  bisect  (-> js/d3
@@ -50,10 +57,12 @@
 ;; Positions the dots based on data.
 (defn position [dot]
 
-(-> dot
-      (.attr "cx" (fn [d] (xScale (x d))))
-      (.attr "cy" (fn [d]  (yScale (y d))))
-      (.attr "r" (fn [d]  (radiusScale (radius d))))))
+  (as-> dot v  
+#_(debug (str "position:x:" (.attr v "cx")) v)
+      (.attr v "cx" (fn [d] (xScale (x d))))
+      (.attr v "cy" (fn [d]  (yScale (y d))))
+      (.attr v "r" (fn [d]  (radiusScale (radius d))))))
+
 
 ;; Finds (and possibly interpolates) the value for the specified year.
 (defn  interpolateValues [values year]
@@ -96,25 +105,25 @@
       (.sort order))
   (.text label (.round js/Math year)))
 
+(defn onmouseover-factory [label] (.classed label "active" true))
+(defn onmouseout-factory [label] (.classed label "active" false))
+(defn mousemove-factory [nations label box dot]
+(fn []
+  (this-as this
+(let [m (.mouse js/d3 this)
+      ys (yearScale box)]
+(displayYear nations label box dot (.invert ys (nth  m  0)))))))
 (defn  enableInteraction 
   [svg nations  label box dot width overlay] 
-  (let [yearScale  (-> js/d3
-(.scaleLinear)
-(.domain #js[1800 2009])
-(.range #js[(+ (.-x box) 10 ) (+ (.-x box) (.-width box) -10)])
-
-(.clamp true))
-        onmouseover (fn [] (.classed label "active" true))
-        onmouseout (fn [] (.classed label "active" false))
-        onmousemove (fn [] 
-                      (this-as this
-                        (displayYear nations label box dot (.invert yearScale (nth  (.mouse js/d3 this) 0)))))]
-    ;; Cancel the current transition, if any.
-    (-> svg
+  ;; Cancel the current transition, if any.
+  (-> svg
         (.transition)
         (.duration 0))
 
 
+  (let [onmousemove (mousemove-factory)
+        onmouseover (onmouseover-factory label)
+        onmouseout (onmouseout-factory label)]
     (-> overlay
         (.on "mouseover" onmouseover)
         (.on "mouseout" onmouseout)
