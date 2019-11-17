@@ -107,7 +107,7 @@
 
 (defn onmouseover-factory [label] (.classed label "active" true))
 (defn onmouseout-factory [label] (.classed label "active" false))
-(defn mousemove-factory [nations label box dot]
+(defn onmousemove-factory [nations label box dot]
 (fn []
   (this-as this
 (let [m (.mouse js/d3 this)
@@ -121,7 +121,7 @@
         (.duration 0))
 
 
-  (let [onmousemove (mousemove-factory)
+  (let [onmousemove (onmousemove-factory nations label box dot)
         onmouseover (onmouseover-factory label)
         onmouseout (onmouseout-factory label)]
     (-> overlay

@@ -9,9 +9,9 @@
 ;; The x & y axes.
 (def xAxis  (-> js/d3
                 ( .axisBottom utils/xScale)
-                ;;( .scale xScale)
-                (.tickFormat "d")
-                #_(.ticks 12 (.format js/d3 ",d"))))
+                ( .scale utils/xScale)
+                #_(.tickFormat "d")
+                (.ticks 12 (.format js/d3 ",d"))))
 
 (def yAxis  (-> js/d3
                 ( .axisLeft utils/yScale)))
@@ -76,11 +76,11 @@
 (def overlay (-> svg
                  (.append "rect")
                  (.attr "class" "overlay")
-                 (.attr "x" (aget box "x"))
-                 (.attr "y" (aget box "y"))
+                 (.attr "x" (.-x box))
+                 (.attr "y" (.-y box ))
                  (.attr "width" (.-width box ))
                  (.attr "height" (.-height box ))
-                 #_(.on "mouseover" utils/enableInteraction) ;; TODO
+                 ;;(.on "mouseover" utils/enableInteraction) 
                  ))
 
 
@@ -106,7 +106,9 @@
                                   c-scaled (utils/colorScale (utils/color d))] c-scaled)))
             (.call utils/position)
             (.sort utils/order))]
+;; Add handler to overlay
 
+    (.on overlay "mouseover" (partial utils/enableInteraction svg nations label box dot utils/width overlay))
 
     ;; Add a title.
     (-> dot
