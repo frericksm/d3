@@ -45,7 +45,7 @@
     (.attr "class" "x label")
     ( .attr "text-anchor" "end")
     ( .attr "x" utils/width)
-    ( .attr"y" (- utils/height 6))
+    ( .attr "y" (- utils/height 6))
     ( .text"income per capita, inflation-adjusted (dollars)")
     )
 
@@ -80,7 +80,7 @@
                  (.attr "y" (.-y box ))
                  (.attr "width" (.-width box ))
                  (.attr "height" (.-height box ))
-                 ;;(.on "mouseover" utils/enableInteraction) 
+                 (.on "mouseover" utils/enableInteraction) 
                  ))
 
 
