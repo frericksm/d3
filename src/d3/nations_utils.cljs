@@ -22,14 +22,19 @@
 ;; Various scales. These domains make assumptions of data, naturally.
 
 (def xScale (-> js/d3
-                (.scaleLog #js [300, 1e5] #js [0 width])))
+        
+                (.scaleLog)
+(.domain #js [300, 1e5])
+(.range #js [0 width] )))
 (def yScale (-> js/d3
-                (.scaleLinear #js [10 85] #js [height 0]))) 
+                (.scaleLinear)
+(.domain #js [10 85])
+(.range  #js [height 0])
+        )) 
 (def radiusScale (-> js/d3
                      (.scaleSqrt)
                      (.domain #js [0 5e8])
-                     (.range #js [0 40])
-))
+                     (.range #js [0 40])))
 (def colorScale (-> js/d3
                 (.scaleOrdinal)
                 (.range (aget js/d3 "schemeCategory10" ))))
