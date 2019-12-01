@@ -105,9 +105,9 @@
     (map (partial interpolate-datum year) x)
     (clj->js x)))
 
-(defn displayYear [nations label box  dot year]
+(defn display-year [nations label box  dot year]
   (println year);; TODO REMOVE
-(-> dot
+(-> (.selectAll ".dot");; TODO dot
     (.data (interpolateData nations year) data-key)
     (.call position)
     (.sort order))
@@ -120,7 +120,7 @@
     (this-as this
       (let [m (.mouse js/d3 this)
             ys (yearScale box)]
-        (displayYear nations label box dot (.invert ys (nth  m  0)))))))
+        (display-year nations label box dot (.invert ys (nth  m  0)))))))
 (defn  enableInteraction 
   [svg nations  label box dot width overlay] 
   ;; Cancel the current transition, if any.
@@ -148,6 +148,6 @@
 ;; Tweens the entire chart by first tweening the year, and then the data.
 ;; For the interpolated data, the dots and label are redrawn.
 (defn  tween-year [nations label box dot]
-  (fn [t & args] 
-    #_(println "tweenYear:args:" args)
-    (displayYear nations label box dot (year t))))
+  (fn [t] 
+    (println "tweenYear:t:" t)
+    (display-year nations label box dot (year t))))
