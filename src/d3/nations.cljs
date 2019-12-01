@@ -1,9 +1,9 @@
+
 (ns d3.nations
   (:require [cljsjs.d3]
             [clojure.string :as str]
             [d3.nations-utils :as utils]))
 (enable-console-print!)
-
 
 
 ;; The x & y axes.
@@ -67,7 +67,7 @@
       (.attr "text-anchor" "end")
       (.attr "x" utils/width)
       (.attr "y" (- utils/height 24))
-      (.text 1800)))
+      (.text utils/start-year)))
 
 (def box (-> label (.node) (.getBBox)))
 
@@ -80,17 +80,18 @@
                  (.attr "y" (.-y box ))
                  (.attr "width" (.-width box ))
                  (.attr "height" (.-height box ))
-                 (.on "mouseover" utils/enableInteraction) 
+                 #_(.on "mouseover" utils/enableInteraction) ;; TODO whichcalls to utils/enableInteraction to activate? 
                  ))
 
 
 
 
 (defn load-data [nations]
-  ;; Add a dot per nation. Initialize the data at 1800, and set the colors.
+  ;; Add a dot per nation. Initialize the data at utils/start-year (e.g 1800), and set the colors.
 
+  ;;TODO verify: is easing working?
   (let [elin (.-easeLinear  js/d3)
-        data  (utils/interpolateData nations 1800)
+        data  (utils/interpolateData nations utils/start-year )
         dot 
         (-> svg
             (.append "g")
@@ -106,9 +107,9 @@
                                   c-scaled (utils/colorScale (utils/color d))] c-scaled)))
             (.call utils/position)
             (.sort utils/order))]
-;; Add handler to overlay
+    ;; Add handler to overlay
 
-    (.on overlay "mouseover" (partial utils/enableInteraction svg nations label box dot utils/width overlay))
+    #_(.on overlay "mouseover" (partial utils/enableInteraction svg nations label box dot utils/width overlay)) ;; TODO which calls to utils/enableInteraction to activate?
 
     ;; Add a title.
     (-> dot
@@ -118,15 +119,16 @@
     ;; Start a transition that interpolates the data based on year.
     (-> svg
         (.transition)
-        (.duration 30000)
-        (.ease elin)
-        (.tween "year" (partial utils/tweenYear nations label box dot ))
-        (.on "end" (partial utils/enableInteraction svg nations label box dot utils/width overlay))
+        (.duration 3000);; TODO 30000
+        (.ease elin) 
+        (.tween "year" (partial utils/tween-year nations label box dot ))
+        ;; see https://github.com/d3/d3-transition#transition_tween
+        #_(.on "end" (partial utils/enableInteraction svg nations label box dot utils/width overlay)) ;;TODO which calls to utils/enableInteraction to activate?
         )))
-  ;; Updates the display to show the specified year.
-  ;; Entry
-  ;; Load the data.
+;; Updates the display to show the specified year.
+;; Entry
+;; Load the data.
 
 
-  (-> js/d3
-      (.json "nations.json" load-data ))
+(-> js/d3
+    (.json "nations.json" load-data ))

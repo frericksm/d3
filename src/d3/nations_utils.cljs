@@ -14,6 +14,9 @@
 (defn color [d] (get (to-clj d) :region))
 (defn data-key [d] (get (to-clj d) :name))
 
+(def start-year 1850)
+(def end-year 1870);; TODO 2009
+
 ;;Chart dimensions.
 (def  margin  {:top 19.5 :right 19.5 :bottom 19.5 :left 39.5})
 (def width (- 960 (:right margin)))
@@ -22,30 +25,30 @@
 ;; Various scales. These domains make assumptions of data, naturally.
 
 (def xScale (-> js/d3
-        
+                
                 (.scaleLog)
-(.domain #js [300, 1e5])
-(.range #js [0 width] )))
+                (.domain #js [300, 1e5])
+                (.range #js [0 width] )))
 (def yScale (-> js/d3
                 (.scaleLinear)
-(.domain #js [10 85])
-(.range  #js [height 0])
-        )) 
+                (.domain #js [10 85])
+                (.range  #js [height 0])
+                )) 
 (def radiusScale (-> js/d3
                      (.scaleSqrt)
                      (.domain #js [0 5e8])
                      (.range #js [0 40])))
 (def colorScale (-> js/d3
-                (.scaleOrdinal)
-                (.range (aget js/d3 "schemeCategory10" ))))
+                    (.scaleOrdinal)
+                    (.range (aget js/d3 "schemeCategory10" ))))
 
 (defn yearScale [box] 
-(-> js/d3
-(.scaleLinear)
-(.domain #js[1800 2009])
-(.range #js[(+ (.-x box) 10 ) (+ (.-x box) (.-width box) -10)])
+  (-> js/d3
+      (.scaleLinear)
+      (.domain #js[start-year end-year])
+      (.range #js[(+ (.-x box) 10 ) (+ (.-x box) (.-width box) -10)])
 
-(.clamp true)))
+      (.clamp true)))
 
 ;; A bisector since many nation's data is sparsely-defined.
 (def  bisect  (-> js/d3
@@ -63,10 +66,10 @@
 (defn position [dot]
 
   (as-> dot v  
-#_(debug (str "position:x:" (.attr v "cx")) v)
-      (.attr v "cx" (fn [d] (xScale (x d))))
-      (.attr v "cy" (fn [d]  (yScale (y d))))
-      (.attr v "r" (fn [d]  (radiusScale (radius d))))))
+    #_(debug (str "position:x:" (.attr v "cx")) v)
+    (.attr v "cx" (fn [d] (xScale (x d))))
+    (.attr v "cy" (fn [d]  (yScale (y d))))
+    (.attr v "r" (fn [d]  (radiusScale (radius d))))))
 
 
 ;; Finds (and possibly interpolates) the value for the specified year.
@@ -103,27 +106,27 @@
     (clj->js x)))
 
 (defn displayYear [nations label box  dot year]
-
-  (-> dot
-      (.data (interpolateData nations year ) data-key)
-      (.call position)
-      (.sort order))
+  (println year);; TODO REMOVE
+(-> dot
+    (.data (interpolateData nations year) data-key)
+    (.call position)
+    (.sort order))
   (.text label (.round js/Math year)))
 
 (defn onmouseover-factory [label] (.classed label "active" true))
 (defn onmouseout-factory [label] (.classed label "active" false))
 (defn onmousemove-factory [nations label box dot]
-(fn []
-  (this-as this
-(let [m (.mouse js/d3 this)
-      ys (yearScale box)]
-(displayYear nations label box dot (.invert ys (nth  m  0)))))))
+  (fn []
+    (this-as this
+      (let [m (.mouse js/d3 this)
+            ys (yearScale box)]
+        (displayYear nations label box dot (.invert ys (nth  m  0)))))))
 (defn  enableInteraction 
   [svg nations  label box dot width overlay] 
   ;; Cancel the current transition, if any.
   (-> svg
-        (.transition)
-        (.duration 0))
+      (.transition)
+      (.duration 0))
 
 
   (let [onmousemove (onmousemove-factory nations label box dot)
@@ -137,14 +140,14 @@
     ))
 
 (defn year [t] 
-  (let [a 1800
-        b 2009 
+  (let [a start-year
+        b end-year
         diff (- b a)]
     (+ a (* t diff))))
 
 ;; Tweens the entire chart by first tweening the year, and then the data.
 ;; For the interpolated data, the dots and label are redrawn.
-(defn  tweenYear [nations label box dot]
-  (fn [t] (displayYear nations label box dot (year t))))
-
-
+(defn  tween-year [nations label box dot]
+  (fn [t & args] 
+    #_(println "tweenYear:args:" args)
+    (displayYear nations label box dot (year t))))
