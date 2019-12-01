@@ -121,7 +121,8 @@
         (.transition)
         (.duration 3000);; TODO 30000
         (.ease elin) 
-        (.tween "year" (partial utils/tween-year nations label box dot ))
+        (.tween "year" (partial utils/tween-year nations label box dot))
+        ;; see https://stackoverflow.com/questions/45831942/tweening-numbers-in-d3-v4-not-working-anymore-like-in-v3        
         ;; see https://github.com/d3/d3-transition#transition_tween
         #_(.on "end" (partial utils/enableInteraction svg nations label box dot utils/width overlay)) ;;TODO which calls to utils/enableInteraction to activate?
         )))

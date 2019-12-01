@@ -86,6 +86,7 @@
 ;;
 
 (defn interpolate-datum [year {:keys [ income population lifeExpectancy] :as d}]
+  (debug "interpolate-datum:year:" year)
   (let [new-income (interpolateValues income year)
         new-population (interpolateValues population year)
         new-lifeExpectancy (interpolateValues lifeExpectancy year)]
@@ -95,8 +96,9 @@
       (assoc x  :income new-income)
       (assoc x  :population  new-population )
       (assoc x  :lifeExpectancy new-lifeExpectancy )
+      (debug "interpolate-datum" x)
       (clj->js x)
-      #_(debug "interpolate-datum" x))))
+      )))
 
 ;; Interpolates the dataset for the given (fractional) year.
 (defn  interpolateData [nations year]
@@ -106,11 +108,11 @@
     (clj->js x)))
 
 (defn display-year [nations label box  dot year]
-  (println year);; TODO REMOVE
-(-> (.selectAll ".dot");; TODO dot
-    (.data (interpolateData nations year) data-key)
-    (.call position)
-    (.sort order))
+  #_(println year)
+  (-> dot
+      (.data (interpolateData nations year) data-key)
+      (.call position)
+      (.sort order))
   (.text label (.round js/Math year)))
 
 (defn onmouseover-factory [label] (.classed label "active" true))
@@ -148,6 +150,7 @@
 ;; Tweens the entire chart by first tweening the year, and then the data.
 ;; For the interpolated data, the dots and label are redrawn.
 (defn  tween-year [nations label box dot]
-  (fn [t] 
-    (println "tweenYear:t:" t)
-    (display-year nations label box dot (year t))))
+  (this-as node
+    (fn [t] 
+      (println "tweenYear:t:" t)
+      (display-year nations label box dot (year t)))))
